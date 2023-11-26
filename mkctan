@@ -1,0 +1,15 @@
+#!/bin/bash
+
+
+cp tex/catoptions.sty doc/* tests/* build
+cd build
+pdflatex test1
+pdflatex --interaction=scrollmode test2
+pdflatex test3
+# pdflatex catoptions-guide
+cd ../..
+rm -rf catoptions-ctan.zip
+zip -r catoptions-ctan.zip \
+       catoptions/tex/catoptions.sty \
+       catoptions/doc/catoptions-guide.{tex,cfg}
+mv catoptions-ctan.zip catoptions
