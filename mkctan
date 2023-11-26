@@ -10,6 +10,7 @@ pdflatex test3
 cd ../..
 rm -rf catoptions-ctan.zip
 zip -r catoptions-ctan.zip \
+       catoptions/README.md \
        catoptions/tex/catoptions.sty \
        catoptions/doc/catoptions-guide.{tex,cfg}
 mv catoptions-ctan.zip catoptions

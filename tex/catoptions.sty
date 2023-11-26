@@ -1,5 +1,5 @@
 %+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++%
-%   This is 'catoptions' package, version 0.2.7h, 2014/08/29.             %
+%   This is 'catoptions' package, version 0.2.7i, 2023/10/29.             %
 %                                                                         %
 %   The catoptions package changes LaTeX package loading internals        %
 %   so that all subsequently loaded packages can rely on having           %
@@ -21,6 +21,7 @@
 %   The LPPL maintenance status of this software is 'author-maintained'.  %
 %                                                                         %
 %   Copyright (c) 2010-2012 Ahmed Musa (amusa22@gmail.com).               %
+%   Copyright (c) 2023      Ahmed Musa (amusa22@gmail.com), David Carlisle%
 %+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++%
 
 \begingroup
@@ -120,8 +121,10 @@
 \@ifdefinable\z@pt{\newdimen\z@pt\z@pt\z@}
 \chardef\active=13
 \NeedsTeXFormat{LaTeX2e}[2011/06/27]
+%% DPC
 \ProvidesPackage{catoptions}
-  [2014/08/29 v0.2.7h Securing catcodes and parsing options (AM)]
+  [2023/10/29 v0.2.7i Securing catcodes and parsing options (AM)]
+%% END CHANGE
 \ifcase%
   \ifx\eTeXversion\cpt@undefined\z@pt\else
     \ifnum\eTeXversion<\tw@\z@pt\else\@ne\fi\fi
@@ -129,6 +132,17 @@
     {This package requires eTeX version 2 or higher.}%
   \expandafter\endinput
 \fi
+%% DPC
+%%% New latex option handler is definined
+\ifx\ProcessKeyOptions\@undefined\else
+\PackageWarningNoLine{catoptions}
+   {\MessageBreak catoptions modifies package option handling and is%
+    \MessageBreak incompatible with many other packages.%
+    \MessageBreak For new documents it is recommended to use%
+    \MessageBreak The built in option processor:%
+    \MessageBreak \string\ProcessKeyOptions, see clsguide}
+\fi
+%% END CHANGE
 \protected\def\cptloggingall{%
   \tracinggroups\@ne\tracingifs\@ne\tracingall\tracingassigns\@ne
 }
@@ -4341,6 +4355,9 @@
 }
 \robust@def*\BeforeStartOfDocument{\grightaddtocs\cpt@beforestartdoc}
 \new@def*\cpt@beforestartdoc{}
+%% DPC
+%% since hooks were added \document does not need grouping adjustment
+\ifx \UseOneTimeHook \@undefined
 \gleftaddtocs\document{%
   \endgroup
   \let\BeforeStartOfDocument\@firstofone
@@ -4350,6 +4367,18 @@
   \gdef\cpt@docstarted{}%
   \begingroup
 }
+\else
+\gleftaddtocs\document{%
+%  \endgroup
+  \let\BeforeStartOfDocument\@firstofone
+  \cpt@beforestartdoc
+  \let\BeforeStartOfDocument\@notprerr
+  \gundefcs\cpt@beforestartdoc
+  \gdef\cpt@docstarted{}%
+%  \begingroup
+}
+\fi
+%% END CHANGE
 \robust@def*\AfterStartOfDocument{\grightaddtocs\cpt@afterstartdoc}
 \new@def*\cpt@afterstartdoc{}
 \robust@def*\AfterAfterStartOfDocument#1{%
